@@ -1,16 +1,20 @@
-import java.awt.*;
+package sem1;
+
+import utils.ImageReaderWriter;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.io.IOException;
 import java.util.Arrays;
 
 import static java.lang.Math.abs;
 
 /*****************************************************************************************
  // USAGE (unix) //
- // java /path/to/ImageConverter.java <option> <number> /path/to/image //
+ // java /path/to/sem1.ImageConverter.java <option> <number> /path/to/image //
  // <option> = g for grayscale, d 0.5 for desaturation of 50%, e for saturation equalizer
  // <number> = scale 0 - 1
- // example:  java ImageConverter.java d 0.25 /home/myusername/pictures/cutepicture.jpg
+ // example:  java sem1.ImageConverter.java d 0.25 /home/myusername/pictures/cutepicture.jpg
  // output: cutepicture_modified.jpg
  ****************************************************************************************/
 
@@ -27,7 +31,7 @@ public class ImageConverter {
 
     void main(String[] args) {
         if (args.length < 2) {
-            System.err.println("Usage: java ImageConverter.java option <number> /path/to/file");
+            System.err.println("Usage: java sem1.ImageConverter.java option <number> /path/to/file");
             return;
         }
         String option = args[0];
@@ -40,11 +44,17 @@ public class ImageConverter {
         }
 
         ImageReaderWriter imageReaderWriter = new ImageReaderWriter();
-        BufferedImage image = imageReaderWriter.readImage(pathToImage);
+        BufferedImage image;
+        try {
+            image = imageReaderWriter.readImage(pathToImage);
+        } catch (IOException e) {
+            System.out.println("Error reading image from file: " + pathToImage);
+            return;
+        }
 
         WritableRaster raster = image.getRaster();
-        this.height  = raster.getHeight();
-        this.width  = raster.getWidth();
+        this.height = raster.getHeight();
+        this.width = raster.getWidth();
 
 
         switch (option.toLowerCase()) {
@@ -60,8 +70,11 @@ public class ImageConverter {
             default:
                 IO.println("Unrecognized option\nUsage: option parameter (for desaturation) /path/to/image\ng - convert image to grayscale\nd <number> - desaturate image with parameter number\ne - equalize saturation ");
         }
-
-        imageReaderWriter.writeImage(image);
+        try {
+            imageReaderWriter.writeImage(image);
+        } catch (IOException e) {
+            System.out.println("Error writing image to file: " + pathToImage);
+        }
     }
 
     private void convertToGrayScale(WritableRaster raster) {

@@ -1,11 +1,7 @@
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.io.File;
 import java.util.Arrays;
-import java.util.Iterator;
 
 import static java.lang.Math.abs;
 
@@ -43,24 +39,8 @@ public class ImageConverter {
             pathToImage = args[2];
         }
 
-        BufferedImage image;
-
-        try {
-            image = ImageIO.read(new File(pathToImage));
-        } catch (Exception e) {
-            IO.println("Unable to get image - is the path correct?");
-            return;
-        }
-
-        String format;
-        try {
-            Iterator<ImageReader> readers = ImageIO.getImageReaders(ImageIO.createImageInputStream(new File(pathToImage)));
-            ImageReader reader = readers.next();
-            format = reader.getFormatName();
-        } catch (Exception e) {
-            IO.println("Unknown format");
-            return;
-        }
+        ImageReaderWriter imageReaderWriter = new ImageReaderWriter();
+        BufferedImage image = imageReaderWriter.readImage(pathToImage);
 
         WritableRaster raster = image.getRaster();
         this.height  = raster.getHeight();
@@ -69,27 +49,19 @@ public class ImageConverter {
 
         switch (option.toLowerCase()) {
             case "g":
-                convertToGrayScale(image.getRaster());
+                convertToGrayScale(raster);
                 break;
             case "d":
-                desaturate(image.getRaster(), Double.parseDouble(desaturationParameter));
+                desaturate(raster, Double.parseDouble(desaturationParameter));
                 break;
             case "e":
-                equalize(image.getRaster());
+                equalize(raster);
                 break;
             default:
                 IO.println("Unrecognized option\nUsage: option parameter (for desaturation) /path/to/image\ng - convert image to grayscale\nd <number> - desaturate image with parameter number\ne - equalize saturation ");
-                return;
         }
 
-        try {
-            String[] splitName = pathToImage.split("\\.");
-            String newName = splitName[0] + "_modified." + splitName[1];
-
-            ImageIO.write(image, format.toLowerCase(), new File(newName));
-        } catch (Exception e) {
-            System.out.println("Unable to write image");
-        }
+        imageReaderWriter.writeImage(image);
     }
 
     private void convertToGrayScale(WritableRaster raster) {

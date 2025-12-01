@@ -7,6 +7,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
 
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
+
 
 // Nepouziva se posledni matice se samymi jednickami, protoze nemame takovou intenzitu
 // Reseni: proste se nepouziva
@@ -14,7 +17,8 @@ public class MatrixDitherer {
     int height;
     int width;
     int[][] ditherMatrix;
-    private final int MATRIX_DIMENSION = 16;
+    private final int ORIGINAL_DEPTH = 8;
+    private final int MATRIX_DIMENSION = (int) sqrt(pow(2, ORIGINAL_DEPTH));
 
     void main(String[] args) {
         ImageReaderWriter imageRW = new ImageReaderWriter();

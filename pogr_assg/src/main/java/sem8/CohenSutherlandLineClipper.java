@@ -10,6 +10,8 @@ import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+// TODO refactor strasne moc opakovaciho kodu
+
 // predpoklada pohyb jen na prvim kvadrantu
 public class CohenSutherlandLineClipper {
     private Rectangle clipRectangle;

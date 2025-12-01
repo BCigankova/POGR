@@ -18,6 +18,14 @@ import static java.lang.Math.abs;
  // output: cutepicture_modified.jpg
  ****************************************************************************************/
 
+/* TODO: prepsat 4 na pocet kanalu
+    vraceni bufferedimage vs void kdyz pisu do rasteru
+    prepsat x, y, pixel atd na Point atd typy nebo udelat custom typy
+    draw scene do utils?
+    pripravit test script
+    255, 0... do glob promennych do utils
+ */
+
 
 public class ImageConverter {
 

@@ -85,7 +85,7 @@ public class BresenhamCircleDrawer {
             case 2 -> new int[]{-y, x};
             case 3 -> new int[]{-x, y};
             case 4 -> new int[]{-x, -y};
-            case 5 -> new int[]{-y, - x};
+            case 5 -> new int[]{-y, -x};
             case 6 -> new int[]{y, -x};
             case 7 -> new int[]{x, -y};
             default -> new int[]{x, y};

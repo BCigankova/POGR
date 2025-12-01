@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 public class BezierCurveDrawer {
 
-    private BufferedImage image;
     private WritableRaster raster;
     private int width;
     private int height;
@@ -33,7 +32,7 @@ public class BezierCurveDrawer {
     }
 
     private void initializePoints(String[] points) {
-        bezierPoints = new Point[numberOfBezierPoints];
+        this.bezierPoints = new Point[numberOfBezierPoints];
         for (int i = 0; i < points.length; i += 2) {
             bezierPoints[i / 2] = new Point(Integer.parseInt(points[i]), Integer.parseInt(points[i + 1]));
         }
@@ -49,7 +48,7 @@ public class BezierCurveDrawer {
 
         int width = Math.max(widthBezier, widthCurve);
         int height = Math.max(heightBezier, heightCurve);
-        this.image = new BufferedImage(width + 50, height + 50, BufferedImage.TYPE_BYTE_BINARY);
+        BufferedImage image = new BufferedImage(width + 50, height + 50, BufferedImage.TYPE_BYTE_BINARY);
 
         this.raster = image.getRaster();
         this.width = image.getWidth();
@@ -62,7 +61,7 @@ public class BezierCurveDrawer {
         }
 
         drawCurveIntoRaster();
-        displayPanel();
+        displayPanel(image);
     }
 
     private void drawCurveIntoRaster() {
@@ -104,7 +103,7 @@ public class BezierCurveDrawer {
         }
     }
 
-    private void displayPanel() {
+    private void displayPanel(BufferedImage image) {
         JLabel label = new JLabel(new ImageIcon(image));
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

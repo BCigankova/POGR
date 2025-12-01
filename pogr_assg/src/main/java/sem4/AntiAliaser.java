@@ -65,7 +65,7 @@ public class AntiAliaser {
         try {
             imageReaderWriter.writeImage(antiAliasedImage);
         } catch (IOException e) {
-            System.out.println("Error writing image " + image);
+            System.out.println("Error writing image");
         }
     }
 
@@ -169,8 +169,8 @@ public class AntiAliaser {
         // posuneme aby nebyly zaporny
         double xRelative = oldXPosition - pixelCenterX;
         double yRelative = oldYPosition - pixelCenterY;
-        double xRotated = xRelative * cos(ROTATION_ANGLE) - yRelative * sin(ROTATION_ANGLE);
-        double yRotated = xRelative * sin(ROTATION_ANGLE) + yRelative * cos(ROTATION_ANGLE);
+        double xRotated = xRelative * cos(Math.toRadians(ROTATION_ANGLE)) - yRelative * sin(Math.toRadians(ROTATION_ANGLE));
+        double yRotated = xRelative * sin(Math.toRadians(ROTATION_ANGLE)) + yRelative * cos(Math.toRadians(ROTATION_ANGLE));
         return new double[]{pixelCenterX + xRotated, pixelCenterY + yRotated};
     }
 }

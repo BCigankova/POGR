@@ -14,12 +14,12 @@ public class BezierCurveDrawer {
 
     private Point[] bezierPoints;
     private int numberOfBezierPoints;
-    private final double T_SENSITIVITY = 0.001;       // 1 / 0.1 ... 10 kroku
+    private final double T_SENSITIVITY = 0.05;       // 1 / 0.1 ... 10 kroku
     private Point[] curvePoints;
 
     void main(String[] args) {
         if (args.length % 2 != 1) {
-            System.out.println("Wrong number of arguments, usage:\njava sem7.BezierCurveDrawer.java  <C>asteljau <x1> <y1> <x2> <y2> ... <xn> <yn> coordinates of the Bezier points");
+            System.out.println("Wrong number of arguments, usage:\njava sem7.BezierCurveDrawer.java  <C>asteljau OR <D>egreeElevation <x1> <y1> <x2> <y2> ... <xn> <yn> coordinates of the Bezier points");
             return;
         }
 
@@ -28,7 +28,16 @@ public class BezierCurveDrawer {
         this.numberOfBezierPoints = (args.length - 1) / 2;
         initializePoints(Arrays.stream(args).skip(1).toArray(String[]::new));
 
-        SwingUtilities.invokeLater(this::drawCurve);
+        switch (args[0]) {
+            case "C":
+                SwingUtilities.invokeLater(this::drawCurveCasteljau);
+                break;
+            case "D":
+                SwingUtilities.invokeLater(this::drawCurveDegreeElevation);
+                break;
+            default:
+                System.out.println("Wrong arguments, usage:\njava sem7.BezierCurveDrawer.java  <C>asteljau OR <D>egreeElevation <x1> <y1> <x2> <y2> ... <xn> <yn> coordinates of the Bezier points");
+        }
     }
 
     private void initializePoints(String[] points) {
@@ -38,7 +47,55 @@ public class BezierCurveDrawer {
         }
     }
 
-    private void drawCurve() {
+    private void drawCurveDegreeElevation() {
+        computeDegreeElevationCurve();
+        int widthCurve = Arrays.stream(curvePoints).mapToInt(point -> point.x).max().getAsInt();
+        int widthBezier = Arrays.stream(bezierPoints).mapToInt(point -> point.x).max().getAsInt();
+        int heightCurve = Arrays.stream(curvePoints).mapToInt(point -> point.y).max().getAsInt();
+        int heightBezier = Arrays.stream(bezierPoints).mapToInt(point -> point.y).max().getAsInt();
+
+        int width = Math.max(widthBezier, widthCurve);
+        int height = Math.max(heightBezier, heightCurve);
+        BufferedImage image = new BufferedImage(width + 50, height + 50, BufferedImage.TYPE_BYTE_BINARY);
+
+        this.raster = image.getRaster();
+        this.width = image.getWidth();
+        this.height = image.getHeight();
+
+        for (int y = 0; y < this.height; y++) {
+            for (int x = 0; x < this.width; x++) {
+                raster.setSample(x, y, 0, 255);
+            }
+        }
+
+        drawCurveIntoRaster();
+        displayPanel(image);
+    }
+
+    private void computeDegreeElevationCurve() {
+        int numberOfNewBezierPoints = (int) (1 / T_SENSITIVITY);
+        int numberOfPoints = numberOfNewBezierPoints + numberOfBezierPoints;
+        this.curvePoints = new Point[numberOfPoints];   // 4 + 100
+        if (numberOfBezierPoints >= 0) System.arraycopy(bezierPoints, 0, curvePoints, 0, numberOfBezierPoints);
+        // c0 = b0, c1=b1 ... cn = bn a zbytek null
+
+        for(int i = 0; i < numberOfNewBezierPoints; i++) {
+            Point[] oldCurvePoints = new Point[numberOfBezierPoints + i + 1];
+            System.arraycopy(curvePoints, 0, oldCurvePoints, 0, numberOfBezierPoints + i);
+
+            for (int j = 1; j < numberOfBezierPoints + i; j++) {
+                double alfa = (double) j / (numberOfBezierPoints + i);
+                int newXCoordinate = (int) (oldCurvePoints[j - 1].getX() * alfa + oldCurvePoints[j].getX() * (1 - alfa));
+                int newYCoordinate = (int) (oldCurvePoints[j - 1].getY() * alfa + oldCurvePoints[j].getY() * (1 - alfa));
+
+                curvePoints[j] = new Point(newXCoordinate, newYCoordinate);
+
+            }
+            curvePoints[numberOfBezierPoints + i] = oldCurvePoints[numberOfBezierPoints + i - 1];
+        }
+    }
+
+    private void drawCurveCasteljau() {
         computeDeCasteljauCurve();
 
         int widthCurve = Arrays.stream(curvePoints).mapToInt(point -> point.x).max().getAsInt();
